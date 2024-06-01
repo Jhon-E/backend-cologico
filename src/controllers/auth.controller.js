@@ -57,15 +57,10 @@ export const logInUser = async (req, res) => {
         "SELECT * FROM usuario WHERE token LIKE ?",
         [token.token]
       );
-      const accest_token = generateAccesToken(user[0][0]);
-      await pool.query("UPDATE usuario SET token = ? WHERE token LIKE ?", [
-        accest_token,
-        token.token,
-      ]);
       res.send({
         nombre: user[0][0].nombre,
         avatar: user[0][0].avatar,
-        accest_token: accest_token
+        accest_token: token.token
       });
     } else {
       res.status(404).send("No existe el usuario.");
