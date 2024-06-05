@@ -44,7 +44,7 @@ export const signUpUser = async (req, res) => {
 
 export const logInUser = async (req, res) => {
   const { email, password } = req.body;
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Origin", "*");
   console.log(req.body);
   try {
     const tokenQuery = await pool.query(
@@ -60,7 +60,8 @@ export const logInUser = async (req, res) => {
       res.send({
         nombre: user[0][0].nombre,
         avatar: user[0][0].avatar,
-        accest_token: token.token
+        rol: user[0][0].ID_rol,
+        accest_token: token.token,
       });
     } else {
       res.status(404).send("No existe el usuario.");
@@ -82,4 +83,17 @@ export const getUserSession = async (req, res) => {
     console.error("token no válido:", err.message);
   }
   res.end();
+};
+
+export const updateRol = async (req, res) => {
+  const { rol, nombre, email } = req.body;
+  try {
+    await pool.query(
+      "UPDATE usuario SET ID_rol = ? WHERE email LIKE ? AND nombre LIKE ?",
+      [rol, email, nombre]
+    );
+    res.status(200).send("ok!")
+  } catch (err) {
+    console.error("Error al actualizar: ", err);
+  }
 };

@@ -9,11 +9,11 @@ export const getUsers = async (req, res) => {
     res.status(200).send(users[0]);
   } catch (err) {
     console.error("Error al consultar la database", err);
-    res.status(500).send("Error interno del server hptaa");
+    res.status(500).send("Error interno del server a");
   }
 };
 
-export const getUser = async (req, res) => {
+export const getVendedor = async (req, res) => {
   const userID = req.params.id;
   try {
     const user = await pool.query(

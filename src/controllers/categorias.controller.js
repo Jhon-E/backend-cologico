@@ -1,6 +1,7 @@
 import { pool } from "../db.js";
 
 export const createCategoria = async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
   const { nombre, descripcion } = req.body;
 
   try {
@@ -8,11 +9,12 @@ export const createCategoria = async (req, res) => {
     res.status(200).send({message: 'categoria creada'})
   } catch (err) {
     console.error("Error al insertar en la database", err);
-    res.status(500).send("Error interno del server hptaa");
+    res.status(500).send("Error interno del server a");
   }
 };
 
 export const getCategories = async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
    try{
     const categorias = await pool.query('SELECT * FROM categorias;')
     res.send(categorias[0])
