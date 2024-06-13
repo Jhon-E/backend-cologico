@@ -15,15 +15,18 @@ export const createProduct = async (req, res) => {
     emailUser,
   } = req.body;
 
+
   const cat_id = await pool.query(
     "SELECT ID_categoria FROM categorias WHERE nombre LIKE ?",
     [categoria]
   );
 
   const id_user = await pool.query(
-    "SELECT ID_usuario FROM usuario WHERE nombre LIKE ? AND email LIKE ?",
+    "SELECT usuario_vendedor.ID_usuarioVendedor FROM usuario_vendedor INNER JOIN usuario ON usuario.ID_usuario = usuario_vendedor.ID_usuario WHERE usuario.nombre LIKE ? AND usuario.email LIKE ?",
     [nombreUser, emailUser]
   );
+
+  console.log(id_user[0][0].ID_usuario);
 
   try {
     await pool.query(
@@ -35,7 +38,7 @@ export const createProduct = async (req, res) => {
         descripcion,
         cat_id[0][0].ID_categoria,
         imagen,
-        id_user,
+        id_user[0][0].ID_usuario,
       ]
     );
     res.status(200).send({ message: "producto publicado" });
@@ -85,17 +88,20 @@ export const getProduct = async (req, res) => {
 export const getProductBySeller = async (req, res) => {
   const { nombre, email } = req.body;
   try {
+    //TENGO QUE OBTENER EL ID PERO DE VENDEDOR
+
     const userQuery = await pool.query(
-      "SELECT ID_usuario FROM usuario WHERE nombre LIKE ? AND email LIKE ?",
+      "SELECT ID_usuarioVendedor FROM usuario INNER JOIN usuario_vendedor ON usuario.ID_usuario = usuario_vendedor.ID_usuario WHERE nombre LIKE ? AND email LIKE ?;",
       [nombre, email]
     );
 
     const productsQuery = await pool.query(
       "SELECT * FROM producto WHERE producto.id_vendedor = ?",
-      [userQuery[0][0].ID_usuario]
+      [userQuery[0][0].ID_usuarioVendedor]
     );
 
     const products = productsQuery[0];
+    console.log(products);
     res.send(products);
   } catch (err) {
     console.error("Error al consultar los productos", err);
