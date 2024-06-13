@@ -7,7 +7,6 @@ dotenv.config();
 function generateAccesToken(user) {
   return jwt.sign(user, process.env.SECRET);
 }
-//el objeto pool es asincrono y me devuelve una promesa.
 
 export const signUpUser = async (req, res) => {
   const { nombre, email, avatar, password, rol } = req.body;
