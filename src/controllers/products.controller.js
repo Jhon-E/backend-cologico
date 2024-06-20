@@ -15,7 +15,7 @@ export const createProduct = async (req, res) => {
     emailUser,
   } = req.body;
 
-
+  console.log(nombreUser, emailUser);
   const cat_id = await pool.query(
     "SELECT ID_categoria FROM categorias WHERE nombre LIKE ?",
     [categoria]
@@ -26,7 +26,7 @@ export const createProduct = async (req, res) => {
     [nombreUser, emailUser]
   );
 
-  console.log(id_user[0][0].ID_usuario);
+  console.log(id_user[0][0].ID_usuarioVendedor);
 
   try {
     await pool.query(
@@ -38,7 +38,7 @@ export const createProduct = async (req, res) => {
         descripcion,
         cat_id[0][0].ID_categoria,
         imagen,
-        id_user[0][0].ID_usuario,
+        id_user[0][0].ID_usuarioVendedor,
       ]
     );
     res.status(200).send({ message: "producto publicado" });
