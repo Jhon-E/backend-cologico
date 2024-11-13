@@ -1,65 +1,75 @@
-import { pool } from "../db.js";
+import Order from "../models/Order.js";
+import Usuario from "../models/Usuario.js";
 
 export const createOrder = async (req, res) => {
   const body = req.body;
   const pedido = body.slice(0, body.length - 1);
+  const { token } = body.pop();
   const totalPagar = pedido.reduce(
     (acc, pro) => acc + pro.quantity * pro.precio,
     0
   );
-  const queryUser = await pool.query(
-    "SELECT ID_usuario FROM usuario WHERE email LIKE ?",
-    [body.pop()]
-  );
-  const idUser = queryUser[0][0].ID_usuario;
-  //CREO EL PEDIDO
+
+  console.log(pedido);
+  
+  const order = new Order();
   try {
-    await pool.query(
-      "INSERT INTO pedido (idUsuario,Estado, totalPagar) VALUES (?,?,?)",
-      [idUser, "En curso", totalPagar]
+    const user = await new Usuario().findUser(
+      "SELECT * FROM usuario WHERE token = @parameter1",
+      { parameter1: token }
     );
-    //INSERTO LOS PRODUCTOS EN PEDIDO_ITEM
+
     try {
-      const idPedidoQuery = await pool.query(
-        "SELECT MAX(ID_pedido) AS 'ID_pedido' from pedido"
-      );
-      const idPedido = idPedidoQuery[0][0].ID_pedido;
-      console.log(idPedidoQuery);
-      pedido.map(async (pro) => {
-        await pool.query(
-          "INSERT INTO pedido_item (id_pedido, id_producto, cantidad_productos) VALUES (?,?,?)",
-          [idPedido, pro.ID_producto, pro.quantity]
-        );
+      await order.saveOrder({
+        idUsuario: user.ID_usuario,
+        Estado: "En curso",
+        totalPagar: totalPagar,
       });
 
-      res.status(200).send("Pedido creado!");
-    } catch (err) {
-      console.error("Error al insertar los items del pedido: ", err);
+      const idPedido = await order.getOrderID();
+      console.log({ id_ultimo_pedi: idPedido });
+
+      for (const pro of pedido) {
+        await order.saveItem({
+          id_pedido: idPedido,
+          id_producto: pro.ID_producto,
+          cantidad_productos: pro.quantity,
+        });
+      }
+
+      res.status(201).send({ message: "Pedido creado exitosamente" });
+      
+    } catch (e) {
+      console.error("Error al crear pedido o insertar productos: ", e);
+      res.status(500).send("Error al procesar el pedido");
     }
   } catch (err) {
-    console.error("error al crear pedido: ", err);
+    console.error("Error al encontrar usuario: ", err);
+    res.status(500).send("Error al verificar el usuario");
   }
 };
 
+
 export const getOrder = async (req, res) => {
-  const { nombre, email } = req.query;
-
-  const queryUser = await pool.query(
-    "SELECT ID_usuario FROM usuario WHERE nombre LIKE ? AND email LIKE ?",
-    [nombre, email]
-  );
-
-  const userId = queryUser[0][0].ID_usuario;
+  const { token } = req.query;
 
   try {
-    const orderQuery = await pool.query('SELECT * FROM pedido WHERE idUsuario = ? ORDER BY ID_pedido DESC LIMIT 1',[userId])
+    const user = await new Usuario().findUser(
+      "SELECT * FROM usuario WHERE token = @parameter1",
+      { parameter1: token }
+    );
+    const order = await new Order().getOrder({ idUsuario: user.ID_usuario });
 
-    const productsOrder = await pool.query('CALL obtenerProductosPedido(?)',[orderQuery[0][0].ID_pedido])
+    const productsOrder = await new Order().getProductsByOrder({
+      id_p: order.ID_pedido,
+    });
 
-    res.status(200).send({ order: orderQuery[0][0], products: productsOrder[0][0]});
-    console.log(orderQuery[0][0])
+    console.log({productsOrder });
+    
+
+    res.status(200).send({ order, products: productsOrder });
   } catch (err) {
     console.error("Error al obtener la orden: ", err);
-    res.status(500).send("Internal server error")
+    res.status(500).send("Internal server error");
   }
 };

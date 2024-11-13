@@ -1,41 +1,39 @@
-import { pool } from "../db.js";
+import Comentario from "../models/Comentario.js";
 import dotenv from "dotenv";
+import Usuario from "../models/Usuario.js";
 
 dotenv.config();
 
 export const getComentsByProduct = async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
   const id_pro = parseInt(req.params.idPro);
   try {
-    const coments = await pool.query(
-      "SELECT usuario.nombre, usuario.avatar, comentario_pro.contenido, fecha FROM comentario_pro INNER JOIN usuario ON usuario.ID_usuario = comentario_pro.id_usuario INNER JOIN producto ON producto.ID_producto = comentario_pro.id_producto WHERE comentario_pro.id_producto = ?",
-      [id_pro]
-    );
-    console.log(coments[0]);
-    res.send(coments[0]);
+    const coments = await new Comentario().getComments({ id: id_pro });
+    res.send(coments);
   } catch (err) {
-    console.error("Error al consultar la database", err);
+    console.error("Error al consultar los comentarios: ", err);
     res.status(500).send("Error interno del server a");
   }
 };
 
 export const createCommentAt = async (req, res) => {
-  const { token, id_producto, contenido } = req.body;
-  res.header("Access-Control-Allow-Origin", "*");
+  const { token, id_producto, contenido, date } = req.body;
+
+  const comentario = new Comentario();
+
+  const fecha = new Date(date).toISOString().split('T')[0];
 
   try {
-    const idUsuario = await pool.query(
-      "SELECT * FROM usuario WHERE token LIKE ?",
-      [token]
-    );
-    console.log(idUsuario[0][0]);
-    await pool.query(
-      "INSERT INTO comentario_pro (id_usuario, id_producto, contenido) VALUES (?,?,?)",
-      [idUsuario[0][0].ID_usuario, id_producto, contenido]
+    const id_user = await new Usuario().findUser(
+      "SELECT ID_usuario FROM usuario WHERE token = @t",
+      { t: token }
     );
 
-    res.status(201).send("Comentario publicado.");
+    const result = await comentario.saveComment({ a: id_user.ID_usuario, b:id_producto, c: contenido, d: fecha})
+    console.log(result);
+
+    res.send(result);
   } catch (err) {
+    console.log("Error al guardar comentario: ",err);
     res.status(500).send("Internal server error.");
   }
 };
