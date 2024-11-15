@@ -22,8 +22,7 @@ export const createProduct = async (req, res) => {
     );
 
     const id_cat = await categoriaModel.getcategorieIdByName({ n: categoria });
-
-    console.log(id_user);
+    
 
     const result = await producto.createProduct({
       a: nombre,
