@@ -46,7 +46,7 @@ class Usuario {
       const request = pool.request();
 
       const query =
-        "INSERT INTO usuario (ID_rol, nombre, email, password, token) VALUES(@a, @b, @c, @d, @f)";
+        "INSERT INTO usuario (ID_rol, nombre, email, password, avatar, token) VALUES(@a, @b, @c, @d, @r, @f)";
 
       for (const key in parameters) {
         request.input(key, parameters[key]);

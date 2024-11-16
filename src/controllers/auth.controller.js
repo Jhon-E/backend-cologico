@@ -33,8 +33,10 @@ export const signUpUser = async (req, res) => {
       b: nombre,
       c: email,
       d: password,
+      r: avatar,
       f: accestToken,
     });
+
 
     res.status(201).send({ accestToken });
   } catch (e) {
@@ -54,7 +56,9 @@ export const logInUser = async (req, res) => {
     );
 
     if (!exist) {
-      return res.status(409).send({ message: "El usuario no está registrado." });
+      return res
+        .status(409)
+        .send({ message: "El usuario no está registrado." });
     }
 
     const userToken = await user.logInUser({ email, password });
@@ -62,7 +66,6 @@ export const logInUser = async (req, res) => {
 
     console.log({ ...userDecoded, token: userToken.token });
     res.status(200).send({ ...userDecoded, token: userToken.token });
-
   } catch (err) {
     console.error("Error al consultar la base de datos", err);
     res.status(500).send({ message: "Error interno del servidor." });

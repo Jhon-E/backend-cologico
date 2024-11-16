@@ -14,12 +14,16 @@ export const createProduct = async (req, res) => {
     nombreUser,
     emailUser,
   } = req.body;
+  
 
   try {
     const id_user = await new Usuario().findUser(
       "SELECT ID_usuarioVendedor FROM usuario_vendedor as v INNER JOIN usuario as u ON u.ID_usuario = v.ID_usuario WHERE u.nombre LIKE @n AND u.email LIKE @e",
       { n: nombreUser, e: emailUser }
     );
+
+    console.log(id_user);
+    
 
     const id_cat = await categoriaModel.getcategorieIdByName({ n: categoria });
     
