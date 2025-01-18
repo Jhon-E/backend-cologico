@@ -1,4 +1,4 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class Producto {
   id;
@@ -24,7 +24,7 @@ class Producto {
         f: "imagen",
       };
 
-      const pool = await db.getConection();
+     // const pool = await db.getConection();
       const request = pool.request();
 
       //const query = "INSERT INTO producto (nombre,precio,stock,descripcion,ID_categoria, imagen, id_vendedor) VALUES (@a,@b,@c,@d,@e,@f,@g)"
@@ -49,7 +49,7 @@ class Producto {
 
   async getProducts(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {
@@ -72,7 +72,7 @@ class Producto {
       const columnMap = {
         id: "ID_Producto",
       };
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {
@@ -98,7 +98,7 @@ class Producto {
         id: "ID_Producto",
       };
 
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {
@@ -120,7 +120,7 @@ class Producto {
 
   async getProductBySeller(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {

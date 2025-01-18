@@ -1,4 +1,4 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class Comentario {
   id;
@@ -15,10 +15,10 @@ class Comentario {
 
   async getComments(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
-      const query = "SELECT usuario.nombre, usuario.avatar, comentario_pro.contenido, fecha FROM comentario_pro INNER JOIN usuario ON usuario.ID_usuario = comentario_pro.id_usuario INNER JOIN producto ON producto.ID_producto = comentario_pro.id_producto WHERE comentario_pro.id_producto = @id"
+      const query = "SELECT u.nombre, u.avatar, c.contenido, c.fecha FROM comentario_pro c INNER JOIN usuario u ON u.ID_usuario = c.id_usuario INNER JOIN vs_Productos v ON v.ID_producto = c.id_producto WHERE c.id_producto = @id"
 
       for (const key in parameters) {
         request.input(key, parameters[key]);
@@ -37,7 +37,7 @@ class Comentario {
 
   async saveComment(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       const query = "INSERT INTO comentario_pro (id_usuario, id_producto, contenido, fecha) VALUES (@a,@b,@c,@d)";

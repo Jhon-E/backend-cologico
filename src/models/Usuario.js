@@ -1,5 +1,4 @@
-import db from "../db.js";
-import jwt from "jsonwebtoken";
+import pool from "../db.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -22,7 +21,7 @@ class Usuario {
 
   async findUser(query, parameters = {}) {
     try {
-      const pool = await db.getConection();
+     // const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {
@@ -42,7 +41,7 @@ class Usuario {
 
   async signUpUser(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       const query =
@@ -73,7 +72,7 @@ class Usuario {
       const query =
         "SELECT token FROM usuario WHERE email LIKE @email AND password LIKE @password";
 
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       if (!accestToken) {
@@ -96,7 +95,7 @@ class Usuario {
 
   async updateRol(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       const query =
@@ -118,7 +117,7 @@ class Usuario {
 
   async updateToken(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {

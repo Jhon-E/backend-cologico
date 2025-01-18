@@ -45,4 +45,5 @@ class Conection {
   }
 }
 const db = new Conection();
-export default db;
+const pool = await db.getConection()
+export default pool

@@ -1,4 +1,4 @@
-import db from "../db.js";
+import pool from "../db.js";
 class Categoria {
   id;
   nombre;
@@ -6,7 +6,7 @@ class Categoria {
 
   async getAllCategories(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       const query = "select * from categorias";
@@ -26,7 +26,7 @@ class Categoria {
 
   async getcategorieIdByName(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
       const query = "SELECT ID_categoria FROM categorias WHERE nombre = @n";
 

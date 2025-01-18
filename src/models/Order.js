@@ -1,4 +1,4 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class Order {
   id_user;
@@ -9,7 +9,7 @@ class Order {
 
   async saveOrder(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {
@@ -26,7 +26,7 @@ class Order {
 
   async getOrderID() {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       const result = await request.execute("sp_obtenerIdUltimoPedido");
@@ -41,7 +41,7 @@ class Order {
 
   async getOrder(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
 
@@ -61,7 +61,7 @@ class Order {
 
   async getProductsByOrder(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for(const key in parameters){
@@ -78,7 +78,7 @@ class Order {
 
   async saveItem(parameters = {}) {
     try {
-      const pool = await db.getConection();
+      //const pool = await db.getConection();
       const request = pool.request();
 
       for (const key in parameters) {

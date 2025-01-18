@@ -1,6 +1,7 @@
 import Usuario from "../models/Usuario.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
 
 dotenv.config();
 
@@ -11,7 +12,9 @@ export function generateAccesToken(user) {
 export const signUpUser = async (req, res) => {
   const { nombre, email, avatar, password, rol } = req.body;
 
-  const user = new Usuario(nombre, email, avatar, null, rol);
+  const passHash = await bcrypt.hash(password, 10);
+
+  const user = new Usuario(nombre, email, avatar, passHash, rol);
 
   if (!nombre || !email || !password || !rol) {
     return res.status(400).send("Todos los campos son obligatorios");
@@ -32,11 +35,10 @@ export const signUpUser = async (req, res) => {
       a: rol,
       b: nombre,
       c: email,
-      d: password,
+      d: passHash,
       r: avatar,
       f: accestToken,
     });
-
 
     res.status(201).send({ accestToken });
   } catch (e) {
@@ -55,13 +57,24 @@ export const logInUser = async (req, res) => {
       { parameter2: email }
     );
 
+    console.log(exist);
+    
+    const isSame = await bcrypt.compare(password, exist.password);
+
     if (!exist) {
       return res
         .status(409)
         .send({ message: "El usuario no está registrado." });
     }
 
-    const userToken = await user.logInUser({ email, password });
+    console.log({isSame, exist});
+    
+
+    if (!isSame && !!exist) {
+      return res.status(409).send({ message: "Contraseña incorrecta" });
+    }
+
+    const userToken = await user.logInUser({ email, password: exist.password });
     const userDecoded = jwt.verify(userToken.token, process.env.SECRET);
 
     console.log({ ...userDecoded, token: userToken.token });
